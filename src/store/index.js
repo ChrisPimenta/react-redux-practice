@@ -1,24 +1,38 @@
-const redux = require('redux');
+import { createSlice, configureStore } from '@reduxjs/toolkit';
 
-const defaultState = {
-    count: 0
+const initialCounterState = {
+    counter: 0,
+    showCounter: true
 };
 
-const counterReducer = (state = defaultState, action) => {
-    switch (action.type) {
-        case 'INCREMENT':
-            return {
-                count: state.count + 1
-            };
-        case 'DECREMENT':
-            return {
-                count: state.count - 1
-            };
-        default:
-            return defaultState;
+// Prepare slice of global state
+const counterSlice = createSlice({
+    name: 'counter',
+    initialState: initialCounterState,
+    reducers: {
+        // Reducers are just functions
+        increment(state) {
+            // Internally uses immer - can edit state
+            state.counter++;
+        },
+        decrement(state) {
+            state.counter--;
+        },
+        increase(state, action) {
+            state.counter += action.payload.amount;
+        },
+        toggleCounter(state) {
+            state.showCounter = !state.showCounter;
+        },
     }
-}
+});
 
-const store = redux.createStore(counterReducer);
+const store = configureStore({
+    // Here we can just keep adding the reducers into the object map and it will automatically do combineReducers to make a main reducer.
+    reducer: counterSlice.reducer
+});
+
+// slice.actions are automatic unique action identifier keys
+export const counterActions = counterSlice.actions;
 
 export default store;
